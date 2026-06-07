@@ -29,3 +29,25 @@ jobs:
            script: |
                const coredemo = require('@actions/core')
                return await coredemo.getIDToken()
+           result-encoding: string
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BRAVE_FIELD_06C69E710 }}
+          action: "upload"
+          app_location: "/"
+          api_location: ""
+          output_location: ""
+          skip_app_build: true
+          github_id_token: ${{ steps.idtoken.outputs.result }}
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          action: "close"
